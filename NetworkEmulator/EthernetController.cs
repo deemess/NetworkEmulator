@@ -124,17 +124,29 @@ namespace NetworkEmulator
         {
         	// пакет дошел
             if (p.DestinationIP == IP)
-                switch (p.Message)
+                switch (p.Type)
                 {
-                    case "ping":                       
-                        p.Message = "pong";
+                    case PacketType.Ping:
+            		
+            		//	System.Windows.Forms.MessageBox.Show("PING: \n" + p.SourceIP + " -> " + p.DestinationIP + "\nTTL: " + p.TTL.ToString());
+                      //  p.Message = "pong";
+                      	p.Type = PacketType.Pong;
+                      	p.Message += "\nPING: Packet reached its destination " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
+						p.Message += "\nSending packet back to " + p.SourceIP; 
+						p.Dump();
                         p.DestinationIP = p.SourceIP;
                         p.SourceIP = this.IP;
-                        p.TTL--;
+                       // p.TTL--;
                         this.Device.Lan.SendPacket(p, this);
                         break;
-                    case "pong":
-                        System.Windows.Forms.MessageBox.Show("PING: \n" + p.DestinationIP + " -> " + p.SourceIP);
+                    case PacketType.Pong:
+                        p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
+                        //System.Windows.Forms.MessageBox.Show("PONG: \n" + p.SourceIP + " -> " + p.SourceIP + "\nTTL: " + p.TTL.ToString());
+                        p.Dump();
+                        break;
+                    case PacketType.Message:
+                       // System.Windows.Forms.MessageBox.Show("Message: " + p.Message);
+                       p.Dump();
                         break;
                     default:
                         System.Windows.Forms.MessageBox.Show("Неизвестный пакет");
@@ -147,6 +159,7 @@ namespace NetworkEmulator
         
         public void SendPacket(Packet p)
         {
+        	p.TTL--;
             Device.SendPacket(p, this);
         }
 

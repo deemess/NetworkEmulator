@@ -44,6 +44,8 @@ namespace NetworkEmulator
         	if (iface == null)
                 ;
         	
+        	//p.TTL--;
+        	
         	// ищем интерфейс, с которым связан iface
         	foreach (var i in Links)
         	{
