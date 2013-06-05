@@ -75,13 +75,16 @@ namespace NetworkEmulator
                         this.Device.Lan.SendPacket(rp, this);
                         break;
                     case PacketType.Pong:
+                        p.TTL--;
                         p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();                   
                         p.Dump();
                         break;
                     case PacketType.Message:
+                        p.TTL--;
                         p.Dump();
                         break;
                     default:
+                        p.TTL--;
                         System.Windows.Forms.MessageBox.Show("Неизвестный пакет");
                         break;
                 }
