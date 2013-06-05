@@ -67,24 +67,25 @@ namespace NetworkEmulator
                 switch (p.Type)
                 {
                     case PacketType.Ping:
-                    	
+                    	p.TTL--; //FIXME
                       	p.Message += "\nPING: Packet reached its destination " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
 						p.Message += "\nSending packet back to " + p.SourceIP; 
 						p.Dump();
 						Packet rp = new Packet(p.DestinationIP, p.SourceIP, p.Message, PacketType.Pong, p.Size, 50);
+						rp.TTL--; //FIXME
                         this.Device.Lan.SendPacket(rp, this);
                         break;
                     case PacketType.Pong:
-                        p.TTL--;
+                        p.TTL--; //FIXME
                         p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();                   
                         p.Dump();
                         break;
                     case PacketType.Message:
-                        p.TTL--;
+                        p.TTL--; //FIXME
                         p.Dump();
                         break;
                     default:
-                        p.TTL--;
+                        p.TTL--; //FIXME
                         System.Windows.Forms.MessageBox.Show("Неизвестный пакет");
                         break;
                 }
