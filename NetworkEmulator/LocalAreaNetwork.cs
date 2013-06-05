@@ -22,10 +22,11 @@ namespace NetworkEmulator
 
         public void AddDevice(INetworkDevice dev)
         {
+        	// TODO
         	// поиск устройств с одинаковыми именами
         	// ....
         	// поиск конфликта адресов
-        	//.....
+        	// ....
         	
         	dev.Lan = this;
         	Devices.Add(dev);

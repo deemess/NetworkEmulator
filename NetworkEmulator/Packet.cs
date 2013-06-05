@@ -14,7 +14,9 @@ namespace NetworkEmulator
 	/// </summary>
 	public class Packet
 	{
-        public string SourceIP { get; set; }
+		
+		
+		public string SourceIP { get; set; }
         public string DestinationIP { get; set; }
         public string Message { get; set; }
         public uint Size { get; set; }

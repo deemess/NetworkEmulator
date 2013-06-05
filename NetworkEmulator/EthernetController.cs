@@ -9,17 +9,13 @@ namespace NetworkEmulator
 {
     class EthernetController: INetworkController
     {
-        private string _ip;
-        private string _netmask;
-        private string _gateway;
-        private Boolean _dynamic_ip;
-        private int _speed;
+        
+               
         private string _mac;
         
         public INetworkDevice Device {get;set;}
          
-        
-       
+     
         /// <summary>
         /// Создается сетевой интерфейс с параметрами по умолчанию(автоматическое получение настроек)
         /// </summary>
@@ -47,70 +43,15 @@ namespace NetworkEmulator
             this.IP = ip;
             this.Netmask = netmask;
             this.Gateway = _gateway;
-            this._dynamic_ip = false;
+            this.DynamicIP = false;
             this._mac = GenerateMACAddress();
         }
 
-        public string IP
-        {
-            get
-            {
-                return _ip;
-            }
-            set
-            {
-                this._ip = value;
-            }
-        }
-
-        public string Netmask
-        {
-            get
-            {
-                return _netmask;
-            }
-            set
-            {
-                this._netmask = value;
-            }
-        }
-
-        public string Gateway
-        {
-            get
-            {
-                return _gateway;
-            }
-            set
-            {
-                this._gateway = value;
-            }
-        }
-
-        public Boolean DynamicIP
-        {
-            get
-            {
-                return _dynamic_ip;
-            }
-            set
-            {
-                this._dynamic_ip = value;
-            }
-        }
-
-        public int Speed
-        {
-            get
-            {
-                return _speed;
-            }
-            set
-            {
-                this._speed = value;
-            }
-        }
-
+        public string IP { get; set; }
+        public string Netmask { get; set; }
+        public string Gateway { get; set; }
+        public Boolean DynamicIP { get; set; }
+        public int Speed { get; set; }
         public string MACAddr
         {
             get
@@ -118,8 +59,7 @@ namespace NetworkEmulator
                 return this._mac;
             }
         }
-    
-           
+        
         public void ReceivePacket(Packet p)
         {
         	// пакет дошел
@@ -128,16 +68,16 @@ namespace NetworkEmulator
                 {
                     case PacketType.Ping:
             		
-            		//	System.Windows.Forms.MessageBox.Show("PING: \n" + p.SourceIP + " -> " + p.DestinationIP + "\nTTL: " + p.TTL.ToString());
-                      //  p.Message = "pong";
-                      	p.Type = PacketType.Pong;
+            		    //	System.Windows.Forms.MessageBox.Show("PING: \n" + p.SourceIP + " -> " + p.DestinationIP + "\nTTL: " + p.TTL.ToString());
+                        //  p.Message = "pong";                     	
                       	p.Message += "\nPING: Packet reached its destination " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
 						p.Message += "\nSending packet back to " + p.SourceIP; 
 						p.Dump();
-                        p.DestinationIP = p.SourceIP;
-                        p.SourceIP = this.IP;
-                       // p.TTL--;
-                        this.Device.Lan.SendPacket(p, this);
+						Packet rp = new Packet(p.DestinationIP, p.SourceIP, p.Message, PacketType.Pong, p.Size, 50);
+						//p.Type = PacketType.Pong;
+                        //p.DestinationIP = p.SourceIP;
+                        //p.SourceIP = this.IP;
+                        this.Device.Lan.SendPacket(rp, this);
                         break;
                     case PacketType.Pong:
                         p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
@@ -145,8 +85,8 @@ namespace NetworkEmulator
                         p.Dump();
                         break;
                     case PacketType.Message:
-                       // System.Windows.Forms.MessageBox.Show("Message: " + p.Message);
-                       p.Dump();
+                        // System.Windows.Forms.MessageBox.Show("Message: " + p.Message);
+                        p.Dump();
                         break;
                     default:
                         System.Windows.Forms.MessageBox.Show("Неизвестный пакет");
@@ -160,7 +100,8 @@ namespace NetworkEmulator
         public void SendPacket(Packet p)
         {
         	p.TTL--;
-            Device.SendPacket(p, this);
+        	if (p.TTL > 0)
+	            Device.SendPacket(p, this);
         }
 
         private string GenerateMACAddress()
