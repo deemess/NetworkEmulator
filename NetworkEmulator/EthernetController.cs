@@ -67,25 +67,18 @@ namespace NetworkEmulator
                 switch (p.Type)
                 {
                     case PacketType.Ping:
-            		
-            		    //	System.Windows.Forms.MessageBox.Show("PING: \n" + p.SourceIP + " -> " + p.DestinationIP + "\nTTL: " + p.TTL.ToString());
-                        //  p.Message = "pong";                     	
+                    	
                       	p.Message += "\nPING: Packet reached its destination " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
 						p.Message += "\nSending packet back to " + p.SourceIP; 
 						p.Dump();
 						Packet rp = new Packet(p.DestinationIP, p.SourceIP, p.Message, PacketType.Pong, p.Size, 50);
-						//p.Type = PacketType.Pong;
-                        //p.DestinationIP = p.SourceIP;
-                        //p.SourceIP = this.IP;
                         this.Device.Lan.SendPacket(rp, this);
                         break;
                     case PacketType.Pong:
-                        p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
-                        //System.Windows.Forms.MessageBox.Show("PONG: \n" + p.SourceIP + " -> " + p.SourceIP + "\nTTL: " + p.TTL.ToString());
+                        p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();                   
                         p.Dump();
                         break;
                     case PacketType.Message:
-                        // System.Windows.Forms.MessageBox.Show("Message: " + p.Message);
                         p.Dump();
                         break;
                     default:
