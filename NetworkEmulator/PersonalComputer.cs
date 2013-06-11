@@ -54,8 +54,9 @@ namespace NetworkEmulator
         	Interfaces.Add(iface);
         }
         
-        public void SendPacket(Packet p, INetworkController src = null)
+        public void SendPacket(Packet p, string ip, PacketType type, string message = "", INetworkController src = null)
         {
+        	
         	// перебор всех интерфейсов, поиск того, с которого можно отправить
         	INetworkController sender = null;
         	foreach (var i in Interfaces)
@@ -63,6 +64,7 @@ namespace NetworkEmulator
         		if (IP.CompareBySubnets(p.DestinationIP, i.IP, i.Netmask))
         		{
         			sender = i;
+        			Packet p = new Packet(sender.IP, ip, "", type, 64, 50);
         			break;
         		}
         	}

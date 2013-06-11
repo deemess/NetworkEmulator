@@ -14,6 +14,7 @@ namespace NetworkEmulator
         private string _mac;
         
         public INetworkDevice Device {get;set;}
+        public WiredLink Link {get;set;}
          
      
         /// <summary>
@@ -98,7 +99,10 @@ namespace NetworkEmulator
         {
         	p.TTL--;
         	if (p.TTL > 0)
-	            Device.SendPacket(p, this);
+        		this.Link.RecievePacket(p, this);
+	            //Device.SendPacket(p, this);
+        	
+        	
         }
 
         private string GenerateMACAddress()

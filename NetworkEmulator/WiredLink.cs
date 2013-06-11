@@ -26,6 +26,8 @@ namespace NetworkEmulator
             this._point2 = p2;
             this.Speed = this.MinSpeed();
             this.Length = length;
+            p1.Link = this;
+            p2.Link = this;
             
         }
 
@@ -53,6 +55,18 @@ namespace NetworkEmulator
                 return this._point1.Speed;
             else
                 return this._point2.Speed;
+        }
+        
+        public void RecievePacket(Packet p, INetworkController iface)
+        {
+        	this.SendPacket(p, iface);
+        }
+        
+        private void SendPacket(Packet p, INetworkController iface)
+        {
+        	EthernetController target;
+        	target = (iface == this.Point1) ? this.Point2 : this.Point1;
+        	target.ReceivePacket(p);
         }
 
     }
