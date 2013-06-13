@@ -44,7 +44,7 @@ namespace NetworkEmulator
 
             
 
-            Packet p = new Packet("192.168.100.1", "192.168.100.3", "", PacketType.Ping);
+            Packet p = new Packet("192.168.100.3", "", PacketType.Ping);
             pc1.SendPacket(p);
             
             

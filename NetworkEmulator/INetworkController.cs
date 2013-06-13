@@ -16,6 +16,7 @@ namespace NetworkEmulator
         Boolean DynamicIP { get; set; }
         string MACAddr { get; }
         int Speed { get; set; }
+        ILink<INetworkController> Link {get;set;}
            
         INetworkDevice Device {get;set;}
         void ReceivePacket(Packet p);

@@ -30,9 +30,8 @@ namespace NetworkEmulator
         /// <param name="destIP">IP-адрес получателя</param>
         /// <param name="msg">Сообщение</param>
         /// <param name="size">Размер пакета в килобайтах</param>
-		public Packet(string srcIP, string destIP, string msg, PacketType t, uint size = 64, uint ttl = 50)
+		public Packet(string destIP, string msg, PacketType t, uint size = 64, uint ttl = 50)
 		{
-			SourceIP = srcIP;
 			DestinationIP = destIP;
 			Message = msg;
             Size = size;

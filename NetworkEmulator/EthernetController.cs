@@ -14,8 +14,8 @@ namespace NetworkEmulator
         private string _mac;
         
         public INetworkDevice Device {get;set;}
-        public WiredLink Link {get;set;}
-         
+        //public WiredLink Link {get;set;}
+        public ILink<INetworkController> Link {get;set;}
      
         /// <summary>
         /// Создается сетевой интерфейс с параметрами по умолчанию(автоматическое получение настроек)
@@ -72,7 +72,7 @@ namespace NetworkEmulator
                       	p.Message += "\nPING: Packet reached its destination " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
 						p.Message += "\nSending packet back to " + p.SourceIP; 
 						p.Dump();
-						Packet rp = new Packet(p.DestinationIP, p.SourceIP, p.Message, PacketType.Pong, p.Size, 50);
+						Packet rp = new Packet(p.DestinationIP, p.Message, PacketType.Pong, p.Size, 50);
 						rp.TTL--; //FIXME
                         this.Device.Lan.SendPacket(rp, this);
                         break;
