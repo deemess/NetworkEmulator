@@ -7,6 +7,21 @@ using System.Threading.Tasks;
 
 namespace NetworkEmulator
 {
+	class InterfaceArgs: EventArgs
+	{
+		public InterfaceArgs(Packet p)
+        {
+            packet = p;
+        }
+        private Packet packet;
+
+        public Packet Packet
+        {
+            get { return packet; }
+            set { packet = value; }
+        }
+	}
+	
     class EthernetController: INetworkController
     {
         
@@ -15,7 +30,10 @@ namespace NetworkEmulator
         
         public INetworkDevice Device {get;set;}
         //public WiredLink Link {get;set;}
-        public ILink<INetworkController> Link {get;set;}
+        //public ILink<INetworkController> Link {get;set;}
+        
+        public event EventHandler<InterfaceArgs> SendEvent;
+        public event EventHandler<InterfaceArgs> ReceiveEvent;
      
         /// <summary>
         /// Создается сетевой интерфейс с параметрами по умолчанию(автоматическое получение настроек)
@@ -63,55 +81,54 @@ namespace NetworkEmulator
         
         public void ReceivePacket(Packet p)
         {
-        	// пакет дошел
-            if (p.DestinationIP == IP)
-            {
-            	p.TTL--;
-                switch (p.Type)
-                {
-                    case PacketType.Ping:
-                      	p.Message += "\nPING: Packet reached its destination " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
-						p.Message += "\nSending packet back to " + p.SourceIP; 
-						p.Dump();
-						Packet rp = new Packet(p.SourceIP, p.Message, PacketType.Pong, p.Size, 50);
-						rp.TTL--; //FIXME
-                        this.Device.SendPacket(rp, null);
-                        //this.Device.Lan.SendPacket(rp, this);
-                        break;
-                    case PacketType.Pong:
-                        p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();                   
-                        p.Dump();
-                        break;
-                    case PacketType.Message:
-                        p.Dump();
-                        break;
-                    default:
-                        System.Windows.Forms.MessageBox.Show("Неизвестный пакет");
-                        break;
-                }
-            }
-            else
-				SendPacket(p);
-                
-     
+        	OnReceivePacket(new InterfaceArgs(p));
         }
         
         public void SendPacket(Packet p)
         {
-        	p.TTL--;
         	if (p.TTL > 0)
-                if (this.Device is Switch)
-                {
-                    foreach (var i in (this.Device as Switch).Interfaces)
-                    {
-                        if (i.Link != this.Link)
-                            i.Link.RecievePacket(p, i);      
-                    }
-                }
+        	{
+        		p.TTL--;
+        		OnSendPacket(new InterfaceArgs(p));
+        	}
+        	else
+        	{
+        		// сообщить, что пакет дропнут по ттл
+        	}
+//        	p.TTL--;
+//        	if (p.TTL > 0)
+//                if (this.Device is Switch)
+//                {
+//                    foreach (var i in (this.Device as Switch).Interfaces)
+//                    {
+//                        if (i.Link != this.Link)
+//                            i.Link.RecievePacket(p, i);      
+//                    }
+//                }
         		//this.Link.RecievePacket(p, this);
 	            //Device.SendPacket(p, this);
         	
         	
+        }
+        
+        protected virtual void OnSendPacket(InterfaceArgs e)
+        {
+        	EventHandler<InterfaceArgs> handler = SendEvent;
+        	if (handler != null)
+        	{
+        		// этим вызовом дергаем подписчиков на событие (линки)
+        		handler(this, e);
+        	}
+        }
+        
+        protected virtual void OnReceivePacket(InterfaceArgs e)
+        {
+        	EventHandler<InterfaceArgs> handler = ReceiveEvent;
+        	if (handler != null)
+        	{
+        		// этим вызовом дергаем подписчиков на событие (сетевые устройства)
+        		handler(this, e);
+        	}
         }
 
         private string GenerateMACAddress()

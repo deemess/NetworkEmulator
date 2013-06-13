@@ -50,6 +50,7 @@ namespace NetworkEmulator
 				throw new ArgumentException("Для данного типа устройств поддерживаются только Ethernet-контроллеры");
 			
 			iface.Device = this;
+			iface.ReceiveEvent += HandleReceive;
 			Interfaces.Add(iface as EthernetController);
 		}
 		
@@ -58,7 +59,14 @@ namespace NetworkEmulator
 			// пусть это будет хаб - посылает пакет на все порты, кроме исходного
 			foreach (var i in Interfaces)
 				if (i != src)
-					Lan.SendPacket(p, i);
+					i.SendPacket(p);
+		}
+		
+		private void HandleReceive(object sender, InterfaceArgs e)
+        {
+        	Packet p = e.Packet;
+        	INetworkController iface = (INetworkController)sender;
+        	SendPacket(p, iface);
 		}
 	}
 }

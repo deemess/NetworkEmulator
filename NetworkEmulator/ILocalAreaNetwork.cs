@@ -10,6 +10,6 @@ namespace NetworkEmulator
     {
     	void AddDevice(INetworkDevice dev);
     	void AddLink(ILink<INetworkController> l);
-    	void SendPacket(Packet p, INetworkController iface);
+    	//void SendPacket(Packet p, INetworkController iface);
     }
 }

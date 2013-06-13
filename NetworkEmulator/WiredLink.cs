@@ -26,9 +26,10 @@ namespace NetworkEmulator
             this._point2 = p2;
             this.Speed = this.MinSpeed();
             this.Length = length;
-            p1.Link = this;
-            p2.Link = this;
-            
+            //p1.Link = this;
+            //p2.Link = this;
+            _point1.SendEvent += HandleSend;
+            _point2.SendEvent += HandleSend;
         }
 
         public EthernetController Point1
@@ -55,17 +56,26 @@ namespace NetworkEmulator
             
         }
         
-        public void RecievePacket(Packet p, INetworkController iface)
-        {
-        	this.SendPacket(p, iface);
-        }
-        
-        private void SendPacket(Packet p, INetworkController iface)
-        {
-        	EthernetController target;
-        	target = (iface == this.Point1) ? this.Point2 : this.Point1;
-        	target.ReceivePacket(p);
-        }
+//        public void RecievePacket(Packet p, INetworkController iface)
+//        {
+//        	this.SendPacket(p, iface);
+//        }
+//        
+//        private void SendPacket(Packet p, INetworkController iface)
+//        {
+//        	EthernetController target;
+//        	target = (iface == this.Point1) ? this.Point2 : this.Point1;
+//        	target.ReceivePacket(p);
+//        }
 
+        private void HandleSend(object sender, InterfaceArgs e)
+        {
+        	EthernetController s = sender as EthernetController;
+        	if (s != null)
+        	{
+        		EthernetController dst = (_point1 == s) ? _point2 : _point1;
+        		dst.ReceivePacket(e.Packet);
+        	}
+        }
     }
 }

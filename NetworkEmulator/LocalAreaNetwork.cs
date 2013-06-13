@@ -39,23 +39,23 @@ namespace NetworkEmulator
         	Links.Add(l);
         }
         
-        public void SendPacket(Packet p, INetworkController iface)
-        {
-        	// пакет никуда не уходит, что-нибудь сообщить...
-        	if (iface == null)
-                ;
-        	
-        	//p.TTL--;
-        	
-        	// ищем интерфейс, с которым связан iface
-        	foreach (var i in Links)
-        	{
-        		if (i.Point1 == iface)
-        			i.Point2.ReceivePacket(p);
-        		else if (i.Point2 == iface)
-        			i.Point1.ReceivePacket(p);
-        	}
-        }
+//        public void SendPacket(Packet p, INetworkController iface)
+//        {
+//        	// пакет никуда не уходит, что-нибудь сообщить...
+//        	if (iface == null)
+//                ;
+//        	
+//        	//p.TTL--;
+//        	
+//        	// ищем интерфейс, с которым связан iface
+//        	foreach (var i in Links)
+//        	{
+//        		if (i.Point1 == iface)
+//        			i.Point2.ReceivePacket(p);
+//        		else if (i.Point2 == iface)
+//        			i.Point1.ReceivePacket(p);
+//        	}
+//        }
         
     }
 }

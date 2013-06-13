@@ -51,6 +51,7 @@ namespace NetworkEmulator
         	}
         	
         	iface.Device = this;
+        	iface.ReceiveEvent += HandleReceive;
         	Interfaces.Add(iface);
         }
         
@@ -72,9 +73,9 @@ namespace NetworkEmulator
             if (sender != null && src != sender)
             {
                 p.SourceIP = sender.IP;
-                sender.Link.RecievePacket(p, sender);
+                //sender.Link.RecievePacket(p, sender);
                 //Lan.SendPacket(p, sender);
-                
+                sender.SendPacket(p);
 
                 
             }
@@ -83,17 +84,54 @@ namespace NetworkEmulator
                 if (defaultIface == null)
                 {
                     // пакет никуда не уходит
-                    Lan.SendPacket(p, null);
+                    // сообщить что-нибудь
+                    //Lan.SendPacket(p, null);
                 }
                 else
                 {
                     if (src != defaultIface)
                     {
                         p.SourceIP = defaultIface.IP;
-                        Lan.SendPacket(p, defaultIface);
+                       // Lan.SendPacket(p, defaultIface);
+                       defaultIface.SendPacket(p);
                     }
                 }
             }
+        }
+        
+        private void HandleReceive(object sender, InterfaceArgs e)
+        {
+        	Packet p = e.Packet;
+        	INetworkController iface = (INetworkController)sender;
+        	// пакет дошел
+            if (p.DestinationIP == iface.IP)
+            {
+            	//p.TTL--;
+                switch (p.Type)
+                {
+                    case PacketType.Ping:
+                      	p.Message += "\nPING: Packet reached its destination " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
+						p.Message += "\nSending packet back to " + p.SourceIP; 
+						p.Dump();
+						Packet rp = new Packet(p.SourceIP, p.Message, PacketType.Pong, p.Size, 50);
+						//rp.TTL--; //FIXME
+                        SendPacket(rp);
+                        //this.Device.Lan.SendPacket(rp, this);
+                        break;
+                    case PacketType.Pong:
+                        p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();                   
+                        p.Dump();
+                        break;
+                    case PacketType.Message:
+                        p.Dump();
+                        break;
+                    default:
+                        System.Windows.Forms.MessageBox.Show("Неизвестный пакет");
+                        break;
+                }
+            }
+            else
+				SendPacket(p, iface);
         }
         
     }

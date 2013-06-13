@@ -12,6 +12,6 @@ namespace NetworkEmulator
     {
         TNetworkController Point1 { get;  }
         TNetworkController Point2 { get;  }
-        void RecievePacket(Packet p, INetworkController iface);
+      //  void RecievePacket(Packet p, INetworkController iface);
     }
 }
