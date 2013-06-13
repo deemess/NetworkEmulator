@@ -51,10 +51,8 @@ namespace NetworkEmulator
         private int MinSpeed()
         {
             //Устанавливаем скорость канала равной минимальной скорости из двух интерфейсов
-            if (this._point1.Speed < this._point2.Speed)
-                return this._point1.Speed;
-            else
-                return this._point2.Speed;
+            return (this._point1.Speed < this._point2.Speed) ? this._point1.Speed : this._point2.Speed;
+            
         }
         
         public void RecievePacket(Packet p, INetworkController iface)

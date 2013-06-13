@@ -65,41 +65,50 @@ namespace NetworkEmulator
         {
         	// пакет дошел
             if (p.DestinationIP == IP)
+            {
+            	p.TTL--;
                 switch (p.Type)
                 {
                     case PacketType.Ping:
-                    	p.TTL--; //FIXME
                       	p.Message += "\nPING: Packet reached its destination " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();
 						p.Message += "\nSending packet back to " + p.SourceIP; 
 						p.Dump();
-						Packet rp = new Packet(p.DestinationIP, p.Message, PacketType.Pong, p.Size, 50);
+						Packet rp = new Packet(p.SourceIP, p.Message, PacketType.Pong, p.Size, 50);
 						rp.TTL--; //FIXME
-                        this.Device.Lan.SendPacket(rp, this);
+                        this.Device.SendPacket(rp, null);
+                        //this.Device.Lan.SendPacket(rp, this);
                         break;
                     case PacketType.Pong:
-                        p.TTL--; //FIXME
                         p.Message += "\nPONG: Packet returned back to " + p.DestinationIP + " at ... TTL " + p.TTL.ToString();                   
                         p.Dump();
                         break;
                     case PacketType.Message:
-                        p.TTL--; //FIXME
                         p.Dump();
                         break;
                     default:
-                        p.TTL--; //FIXME
                         System.Windows.Forms.MessageBox.Show("Неизвестный пакет");
                         break;
                 }
+            }
+            else
+				SendPacket(p);
                 
-                else
-                    SendPacket(p);
+     
         }
         
         public void SendPacket(Packet p)
         {
         	p.TTL--;
         	if (p.TTL > 0)
-        		this.Link.RecievePacket(p, this);
+                if (this.Device is Switch)
+                {
+                    foreach (var i in (this.Device as Switch).Interfaces)
+                    {
+                        if (i.Link != this.Link)
+                            i.Link.RecievePacket(p, i);      
+                    }
+                }
+        		//this.Link.RecievePacket(p, this);
 	            //Device.SendPacket(p, this);
         	
         	

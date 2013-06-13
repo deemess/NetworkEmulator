@@ -72,6 +72,7 @@ namespace NetworkEmulator
             if (sender != null && src != sender)
             {
                 p.SourceIP = sender.IP;
+                sender.Link.RecievePacket(p, sender);
                 //Lan.SendPacket(p, sender);
                 
 
